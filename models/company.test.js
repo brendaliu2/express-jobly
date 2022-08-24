@@ -56,6 +56,40 @@ describe("create", function () {
   });
 });
 
+/************************************** filterCompany */
+
+describe("filterCompany", function (){
+  test("works with no filter queries", function(){
+    const queries = {};
+    const resp = Company.filterCompany(queries);
+    
+    expect(resp).toEqual({
+      where: "", queries: [],
+    });
+  });
+  
+  test("only name supplied", function(){
+    const queries = {name: "C1"};
+    const resp = Company.filterCompany(queries);
+    
+    expect(resp).toEqual({
+      where: "WHERE name ILIKE $1", queries: ["%C1%"],
+    });
+  });
+    
+  test("min supplied, no maximum", function(){
+    const queries = {minEmployees: 1};
+    const resp = Company.filterCompany(queries);
+    
+    expect(resp).toEqual({
+      where: "WHERE num_employees >= $1", queries: [1],
+    });
+  });
+ 
+  //both min and max
+  //all criteria
+})
+
 /************************************** findAll */
 
 describe("findAll", function () {
