@@ -56,12 +56,12 @@ describe("create", function () {
   });
 });
 
-/************************************** filterCompany */
+/************************************** _filterCompany */
 
-describe("filterCompany", function (){
+describe("_filterCompany", function (){
   test("works with no filter queries", function(){
     const queries = {};
-    const resp = Company.filterCompany(queries);
+    const resp = Company._filterCompany(queries);
     
     expect(resp).toEqual({
       where: "", queries: [],
@@ -70,7 +70,7 @@ describe("filterCompany", function (){
   
   test("only name supplied", function(){
     const queries = {name: "C1"};
-    const resp = Company.filterCompany(queries);
+    const resp = Company._filterCompany(queries);
     
     expect(resp).toEqual({
       where: "WHERE name ILIKE $1", queries: ["%C1%"],
@@ -79,7 +79,7 @@ describe("filterCompany", function (){
     
   test("min supplied, no maximum", function(){
     const queries = {minEmployees: 1};
-    const resp = Company.filterCompany(queries);
+    const resp = Company._filterCompany(queries);
     
     expect(resp).toEqual({
       where: "WHERE num_employees >= $1", queries: [1],
@@ -88,7 +88,7 @@ describe("filterCompany", function (){
   
   test("min and max supplied", function(){
     const queries = {minEmployees: 1, maxEmployees: 50};
-    const resp = Company.filterCompany(queries);
+    const resp = Company._filterCompany(queries);
     
     expect(resp).toEqual({
       where: "WHERE num_employees >= $1 AND num_employees <= $2", queries: [1, 50],
@@ -97,7 +97,7 @@ describe("filterCompany", function (){
  
   test("all criteria supplied", function(){
     const queries = {name: "C", minEmployees: 1, maxEmployees: 50};
-    const resp = Company.filterCompany(queries);
+    const resp = Company._filterCompany(queries);
     
     expect(resp).toEqual({
       where: `WHERE name ILIKE $1 AND num_employees >= $2 AND num_employees <= $3`, 
