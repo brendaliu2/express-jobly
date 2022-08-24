@@ -85,9 +85,26 @@ describe("filterCompany", function (){
       where: "WHERE num_employees >= $1", queries: [1],
     });
   });
+  
+  test("min and max supplied", function(){
+    const queries = {minEmployees: 1, maxEmployees: 50};
+    const resp = Company.filterCompany(queries);
+    
+    expect(resp).toEqual({
+      where: "WHERE num_employees >= $1 AND num_employees <= $2", queries: [1, 50],
+    });
+  });
  
-  //both min and max
-  //all criteria
+  test("all criteria supplied", function(){
+    const queries = {name: "C", minEmployees: 1, maxEmployees: 50};
+    const resp = Company.filterCompany(queries);
+    
+    expect(resp).toEqual({
+      where: `WHERE name ILIKE $1 AND num_employees >= $2 AND num_employees <= $3`, 
+      queries: ['%C%',1, 50],
+    });
+  });
+
 })
 
 /************************************** findAll */
@@ -119,13 +136,120 @@ describe("findAll", function () {
       },
     ]);
   });
-});
+  
+  test("works: name filter", async function () {
+    let companies = await Company.findAll({name: "C1"});
+    expect(companies).toEqual([
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      }
+    ]);
+  });
+  
+  test("works: only min filter", async function () {
+  let companies = await Company.findAll({minEmployees: 2});
+  expect(companies).toEqual([
+    {
+      handle: "c2",
+      name: "C2",
+      description: "Desc2",
+      numEmployees: 2,
+      logoUrl: "http://c2.img",
+    },
+    {
+      handle: "c3",
+      name: "C3",
+      description: "Desc3",
+      numEmployees: 3,
+      logoUrl: "http://c3.img",
+    },
+    ]);
+  })
+    
+  test("works: min and max filter", async function () {
+    let companies = await Company.findAll({minEmployees: 1, maxEmployees: 2});
+    expect(companies).toEqual([
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      },
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      },
+    ]);
+  });
+      
+  test("works: all criteria filter", async function () {
+    let companies = await Company.findAll({name: "C1", minEmployees: 1, maxEmployees: 2});
+    expect(companies).toEqual([
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      },
+    ]);
+  });
+  
+  test("works: partial name filter", async function () {
+    let companies = await Company.findAll({name: "C"});
+    expect(companies).toEqual([
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      },
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      },
+      {
+        handle: "c3",
+        name: "C3",
+        description: "Desc3",
+        numEmployees: 3,
+        logoUrl: "http://c3.img",
+      },
+    ]);
+  });
 
+  test("fails: min > max filter", async function () {
+    try{
+      await Company.findAll({minEmployees: 5, maxEmployees: 2});
+      
+    } catch (err) {
+      expect(err.message).toEqual(`Minimum employee filter must be less than 
+        maximum employee filter. Please change your search accordingly.`);
+        
+      expect(err instanceof BadRequestError).toBeTruthy();
+      
+    }
+  });
+});
+  
 /************************************** get */
 
 describe("get", function () {
   test("works", async function () {
     let company = await Company.get("c1");
+    
     expect(company).toEqual({
       handle: "c1",
       name: "C1",
@@ -139,6 +263,7 @@ describe("get", function () {
     try {
       await Company.get("nope");
       throw new Error("fail test, you shouldn't get here");
+      
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
     }

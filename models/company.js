@@ -58,7 +58,8 @@ class Company {
    * Returns either empty string if no queries or WHERE name ILIKE ... 
    * AND minEmployees >= ... AND maxEmployees <= ...    */
   
-  static filterCompany({ name, minEmployees, maxEmployees }) {
+
+  static _filterCompany({ name, minEmployees, maxEmployees }) {
     let whereStatement = [];
     let queries = [];
 
@@ -103,7 +104,7 @@ class Company {
         maximum employee filter. Please change your search accordingly.`);
     }
 
-    const { where, queries} = this.filterCompany({ name, minEmployees, maxEmployees });
+    const { where, queries } = this._filterCompany({ name, minEmployees, maxEmployees });
     const companiesRes = await db.query(
       `SELECT handle,
                 name,

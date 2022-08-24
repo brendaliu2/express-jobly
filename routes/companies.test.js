@@ -66,7 +66,7 @@ describe("POST /companies", function () {
 /************************************** GET /companies */
 
 describe("GET /companies", function () {
-  test("ok for anon", async function () {
+  test("ok for anon and no filtering", async function () {
     const resp = await request(app).get("/companies");
     expect(resp.body).toEqual({
       companies:
@@ -94,7 +94,100 @@ describe("GET /companies", function () {
             },
           ],
     });
+
   });
+  
+  test("works: name in query string", async function () {
+    const resp = await request(app).get("/companies?name=c1");
+    expect(resp.body).toEqual({
+      companies:
+          [
+            {
+              handle: "c1",
+              name: "C1",
+              description: "Desc1",
+              numEmployees: 1,
+              logoUrl: "http://c1.img",
+            },
+          ],
+    });
+  });
+  
+  test("works: min and max in query string", async function () {
+    const resp = await request(app).get("/companies?minEmployees=1&maxEmployees=2");
+    expect(resp.body).toEqual({
+      companies:
+          [
+            {
+              handle: "c1",
+              name: "C1",
+              description: "Desc1",
+              numEmployees: 1,
+              logoUrl: "http://c1.img",
+            },
+            {
+              handle: "c2",
+              name: "C2",
+              description: "Desc2",
+              numEmployees: 2,
+              logoUrl: "http://c2.img",
+            },
+          ],
+    });
+  });
+  
+  test("works: all criteria in query string", async function () {
+    const resp = await request(app).get("/companies?name=C2&minEmployees=1&maxEmployees=2");
+    expect(resp.body).toEqual({
+      companies:
+          [
+            {
+              handle: "c2",
+              name: "C2",
+              description: "Desc2",
+              numEmployees: 2,
+              logoUrl: "http://c2.img",
+            },
+          ],
+    });
+  });
+  
+  test("fails: min greater than max in query string", async function () {
+    
+    try{
+      await request(app).get("/companies?minEmployees=5&maxEmployees=2");
+      
+    } catch (err) {
+      expect(err.status).toEqual(400);
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+    
+  });
+  
+  test("fails: not pass number type as minEmployee", async function () {
+  
+  try{
+    await request(app).get("/companies?minEmployees=five");
+    
+  } catch (err) {
+    expect(err.status).toEqual(400);
+    expect(err instanceof BadRequestError).toBeTruthy();
+  }
+  
+  });
+  
+  test("fails: pass in invalid query string", async function () {
+  
+    try{
+      await request(app).get("/companies?invalid=five");
+      
+    } catch (err) {
+      expect(err.status).toEqual(400);
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+    
+  });
+
 
   test("fails: test next() handler", async function () {
     // there's no normal failure event which will cause this route to fail ---

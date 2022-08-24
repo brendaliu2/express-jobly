@@ -15,7 +15,7 @@ describe("sql partial update", function () {
     expect(values).toEqual(["Aliya", 32])
   });
 
-  test("throw error on invalid input", function () {   
+  test("throw error on invalid first input", function () {   
     try{
       const resp = sqlForPartialUpdate({},{
         firstName: "first_name",
@@ -26,4 +26,14 @@ describe("sql partial update", function () {
       expect(err.message).toBe("No data")
     }
   });
+  
+  test("throw error on invalid second input", function () {   
+    try{
+      const resp = sqlForPartialUpdate({firstName: 'Aliya', age: 32},{})
+
+    } catch (err){
+      expect(err.message).toBe("No data")
+    }
+  });
 })
+
