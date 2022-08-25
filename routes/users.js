@@ -61,7 +61,7 @@ router.get("/", ensureAdmin, async function (req, res, next) {
  *
  * Returns { username, firstName, lastName, isAdmin }
  *
- * Authorization required: admin or self
+ * Authorization required: admin or current user
  **/
 
 router.get("/:username", ensureAdminOrCorrectUser, async function (req, res, next) {
@@ -77,7 +77,7 @@ router.get("/:username", ensureAdminOrCorrectUser, async function (req, res, nex
  *
  * Returns { username, firstName, lastName, email, isAdmin }
  *
- * Authorization required: admin or self
+ * Authorization required: admin or current user
  **/
 
 router.patch("/:username", ensureAdminOrCorrectUser, async function (req, res, next) {

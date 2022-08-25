@@ -102,7 +102,7 @@ describe("ensureAdmin", function () {
   });
   
   test("unauth if not admin", function () {
-    expect.assertions(1); //What does this mean.
+    expect.assertions(1);
     const req = {};
     const res = { locals: {user: { isAdmin: false }} };
     const next = function (err) {
