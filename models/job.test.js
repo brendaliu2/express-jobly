@@ -144,21 +144,21 @@ describe('findAll', function () {
         id: 1,
         title: 'job1',
         salary: 10,
-        equity: .001,
+        equity: "0.001",
         companyHandle: 'c1'
       },
       {
         id: 2,
         title: 'job2',
         salary: 15,
-        equity: .050,
+        equity: "0.050",
         companyHandle: 'c2'
       },
       {
         id: 3,
         title: 'job3',
         salary: 20,
-        equity: 1.0,
+        equity: "1.0",
         companyHandle: 'c3'
       },
     ]);
@@ -172,7 +172,7 @@ describe('findAll', function () {
         id: 1,
         title: 'job1',
         salary: 10,
-        equity: .001,
+        equity: "0.001",
         companyHandle: 'c1'
       },
     ]);
@@ -186,14 +186,14 @@ describe('findAll', function () {
         id: 2,
         title: 'job2',
         salary: 15,
-        equity: .050,
+        equity: "0.050",
         companyHandle: 'c2'
       },
       {
         id: 3,
         title: 'job3',
         salary: 20,
-        equity: 1.0,
+        equity: "1.0",
         companyHandle: 'c3'
       },
     ]);
@@ -207,14 +207,14 @@ describe('findAll', function () {
         id: 2,
         title: 'job2',
         salary: 15,
-        equity: .050,
+        equity: "0.050",
         companyHandle: 'c2'
       },
       {
         id: 3,
         title: 'job3',
         salary: 20,
-        equity: 1.0,
+        equity: "1.0",
         companyHandle: 'c3'
       },
     ]);
@@ -228,7 +228,7 @@ describe('findAll', function () {
         id: 1,
         title: 'job1',
         salary: 10,
-        equity: .001,
+        equity: "0.001",
         companyHandle: 'c1'
       },
     ]);
@@ -242,21 +242,21 @@ describe('findAll', function () {
         id: 1,
         title: 'job1',
         salary: 10,
-        equity: .001,
+        equity: "0.001",
         companyHandle: 'c1'
       },
       {
         id: 2,
         title: 'job2',
         salary: 15,
-        equity: .050,
+        equity: "0.050",
         companyHandle: 'c2'
       },
       {
         id: 3,
         title: 'job3',
         salary: 20,
-        equity: 1.0,
+        equity: "1.0",
         companyHandle: 'c3'
       },
     ]);
@@ -274,7 +274,7 @@ describe("get", function () {
       id: 1,
       title: 'job1',
       salary: 10,
-      equity: .001,
+      equity: "0.001",
       companyHandle: 'c1'
     });
   });
@@ -314,7 +314,7 @@ describe("update", function () {
     });
 
     const result = await db.query(
-      `SELECT id, title, salary, equity, company_handle
+      `SELECT id, title, salary, equity, company_handle AS "companyHandle"
       FROM jobs
       WHERE id = 1`
     );
@@ -322,7 +322,7 @@ describe("update", function () {
       id: 1,
       title: "new title",
       salary: 100,
-      equity: 0,
+      equity: "0",
       companyHandle: "c1",
     }]);
   });
@@ -336,7 +336,7 @@ describe("update", function () {
     });
 
     const result = await db.query(
-      `SELECT id, title, salary, equity, company_handle
+      `SELECT id, title, salary, equity, company_handle AS "companyHandle"
       FROM jobs
       WHERE id = 1`
     );
