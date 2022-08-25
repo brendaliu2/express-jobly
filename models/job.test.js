@@ -25,13 +25,6 @@ describe('create', function () {
     companyHandle: 'c1'
   };
 
-  const badNewJob = {
-    title: 'new job',
-    salary: 'invalid',
-    equity: 'invalid',
-    companyHandle: 'c1'
-  };
-
   test('works', async function () {
     let job = await Job.create(newJob);
     expect(job).toEqual({
@@ -57,16 +50,6 @@ describe('create', function () {
     );
   });
 
-
-  test('fails on text as num inputs', async function () {
-    try {
-      let job = await Job.create(badNewJob);
-      throw new Error("fail test, you shouldn't get here");
-
-    } catch (err) {
-      expect(err instanceof BadRequestError).toBeTruthy();
-    }
-  });
 
   test('bad request with dupe', async function () {
     try {
@@ -165,7 +148,7 @@ describe('findAll', function () {
   });
 
   test('works with title filter', async function () {
-    const jobs = await Job.findAll({ name: 'job1' });
+    const jobs = await Job.findAll({ title: 'job1' });
 
     expect(jobs).toEqual([
       {
@@ -200,7 +183,7 @@ describe('findAll', function () {
   });
 
   test('works with all queries', async function () {
-    const jobs = await Job.findAll({ name: 'job', minSalary: 15, hasEquity: true });
+    const jobs = await Job.findAll({ title: 'job', minSalary: 15, hasEquity: true });
 
     expect(jobs).toEqual([
       {
@@ -221,7 +204,7 @@ describe('findAll', function () {
   });
 
   test('works with partial title', async function () {
-    const jobs = await Job.findAll({ name: '1' });
+    const jobs = await Job.findAll({ title: '1' });
 
     expect(jobs).toEqual([
       {
@@ -281,9 +264,10 @@ describe("get", function () {
 
   test("not found if job does not exist", async function () {
     try {
-      await Job.get("bad");
+      await Job.get(-5);
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
+
       expect(err instanceof NotFoundError).toBeTruthy();
     }
   });
@@ -299,7 +283,7 @@ describe("update", function () {
   };
 
   const updateJobNulls = {
-    name: "new title",
+    title: "new title",
     salary: null,
     equity: null,
   };
@@ -309,7 +293,9 @@ describe("update", function () {
 
     expect(job).toEqual({
       id: 1,
-      ...updateJob,
+      title: "new title",
+      salary: 100,
+      equity: "0",
       companyHandle: "c1",
     });
 
@@ -351,7 +337,7 @@ describe("update", function () {
 
   test("not found if job does not exist", async function () {
     try {
-      await Job.update("bad", updateJob);
+      await Job.update(-5, updateJob);
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
@@ -361,6 +347,15 @@ describe("update", function () {
   test("bad request with no data", async function () {
     try {
       await Job.update(1, {});
+      throw new Error("fail test, you shouldn't get here");
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+  
+  test("bad companyHandle or id passed into data", async function () {
+    try {
+      await Job.update(1, {companyHandle: 'invalid', id: 1});
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
@@ -382,7 +377,7 @@ describe("remove", function(){
   
   test("not found if no such job", async function () {
     try {
-      await Job.remove("nope");
+      await Job.remove(-5);
       throw new Error("fail test, you shouldn't get here");
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();

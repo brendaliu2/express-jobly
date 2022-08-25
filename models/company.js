@@ -56,7 +56,7 @@ class Company {
    * and maxEmployees. 
    * 
    * Returns either empty string if no queries or WHERE name ILIKE ... 
-   * AND minEmployees >= ... AND maxEmployees <= ...    */
+   * AND numEmployees >= ... AND numEmployees <= ...    */
   
 
   static _filterCompany({ name, minEmployees, maxEmployees }) {
@@ -92,7 +92,7 @@ class Company {
    * maxEmployee, an error is thrown.
    *
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
-   * QUESTION ON CODE REVIEW: why doess white space in q-string need to be %20 not +
+   * 
    * */
 
   static async findAll(filter = {}) {
