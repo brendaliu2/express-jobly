@@ -9,7 +9,7 @@ async function commonBeforeAll() {
   // noinspection SqlWithoutWhere QUESTION: what is this?
   await db.query("DELETE FROM users");
   await db.query("DELETE FROM jobs");
-  
+  await db.query("ALTER SEQUENCE jobs_id_seq RESTART WITH 1");
 
   await db.query(`
     INSERT INTO companies(handle, name, num_employees, description, logo_url)
@@ -31,7 +31,7 @@ async function commonBeforeAll() {
         await bcrypt.hash("password2", BCRYPT_WORK_FACTOR),
       ]);
       
-    await db.query(`
+  await db.query(`
     INSERT INTO jobs(title, salary, equity, company_handle)
     VALUES ('job1','10','.001','c1'),
             ('job2','15','.050','c2'),
