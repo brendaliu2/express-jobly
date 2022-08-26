@@ -10,8 +10,8 @@ const {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-  u1Token,
-  u2Token,
+  adminToken,
+  nonAdminToken,
   jobs
 } = require("./_testCommon");
 const { UnauthorizedError, NotFoundError } = require("../expressError");
@@ -37,7 +37,7 @@ describe("POST /jobs", function(){
     const resp = await request(app)
       .post("/jobs")
       .send(newJob)
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`); //rename as "adminToken"
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({
       job: {
@@ -55,7 +55,18 @@ describe("POST /jobs", function(){
       const resp = await request(app)
         .post("/jobs")
         .send(newJob)
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${nonAdminToken}`);
+    } catch (err) {
+      expect(err.status).toEqual(401);
+      expect(err instanceof UnauthorizedError).toBeTruthy();
+    }
+  });
+  
+  test("fails for anon", async function(){
+    try{
+      const resp = await request(app)
+        .post("/jobs")
+        .send(newJob)
     } catch (err) {
       expect(err.status).toEqual(401);
       expect(err instanceof UnauthorizedError).toBeTruthy();
@@ -66,7 +77,7 @@ describe("POST /jobs", function(){
     const resp = await request(app)
       .post("/jobs")
       .send({title: "engineer"})
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
   
@@ -77,7 +88,7 @@ describe("POST /jobs", function(){
             salary: "nothing", 
             equity: 0.5,
             companyHandle: "c1"})
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
 })
@@ -164,7 +175,7 @@ describe("PATCH /jobs/:id", function(){
     const resp = await request(app)
       .patch(`/jobs/${j1.id}`)
       .send({title: "j1-new"})
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.body).toEqual({
       job: {
         id: j1.id,
@@ -183,7 +194,7 @@ describe("PATCH /jobs/:id", function(){
         .send({
           title: "j1-new",
         })
-        .set("authorization", `Bearer ${u2Token}`);
+        .set("authorization", `Bearer ${nonAdminToken}`);
     expect(resp.statusCode).toEqual(401);
   })
   
@@ -201,7 +212,7 @@ describe("PATCH /jobs/:id", function(){
       const resp = await request(app)
         .patch("/jobs/0")
         .send({title: "j1-new"})
-        .set("authorization", `Bearer ${u1Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
       
       console.log('resp',resp.body)
       expect(resp.statusCode).toEqual(404);
@@ -214,7 +225,7 @@ describe("PATCH /jobs/:id", function(){
     const resp = await request(app)
       .patch(`/jobs/${j1.id}`)
       .send({companyHandle: "c2"})
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   })
   
@@ -223,7 +234,7 @@ describe("PATCH /jobs/:id", function(){
     const resp = await request(app)
       .patch(`/jobs/${j1.id}`)
       .send({id: 40000})
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
   
@@ -232,7 +243,7 @@ describe("PATCH /jobs/:id", function(){
     const resp = await request(app)
       .patch(`/jobs/${j1.id}`)
       .send({salary: "not-a-number"})
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   })
 })
@@ -245,7 +256,7 @@ describe("DELETE /jobs/:id", function(){
     let [j1, j2, j3] = jobs;
     const resp = await request(app)
       .delete(`/jobs/${j1.id}`)
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.body).toEqual({ deleted: `${j1.id}`});
   });
   
@@ -260,14 +271,14 @@ describe("DELETE /jobs/:id", function(){
     let [j1, j2, j3] = jobs;
     const resp = await request(app)
       .delete(`/jobs/${j1.id}`)
-      .set("authorization", `Bearer ${u2Token}`);
+      .set("authorization", `Bearer ${nonAdminToken}`);
     expect(resp.statusCode).toEqual(401);
   })
   
   test("not found on nonexisting user", async function(){
     const resp = await request(app)
       .delete(`/jobs/0`)
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
   })
 })

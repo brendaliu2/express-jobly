@@ -27,5 +27,3 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 
 module.exports = { sqlForPartialUpdate };
 
-
-//TODO: Questions: how to read html coverage, // noinspection SqlWithoutWhere

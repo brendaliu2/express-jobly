@@ -290,7 +290,7 @@ describe('getAllJobsFromCompany', function () {
   test('works with no available jobs', async function () {
     let jobs = await Job.getAllJobsFromCompany('c3');
     
-    expect(jobs).toEqual(['No available jobs.'])
+    expect(jobs).toEqual([]); 
   })
 })
 

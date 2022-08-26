@@ -79,15 +79,13 @@ router.get("/", async function (req, res, next) {
  *   where jobs is [{ id, title, salary, equity }, ...]
  *  
  *  If no jobs available for company, will return 
- *    {company: jobs: {['No available jobs.']}}
+ *    {company: jobs: {[]}}
  * Authorization required: none
  */
 
 router.get("/:handle", async function (req, res, next) {
   const company = await Company.get(req.params.handle);
-  const jobs = await Job.getAllJobsFromCompany(req.params.handle);
-
-  company.jobs = jobs;
+  
   return res.json({ company });
 });
 

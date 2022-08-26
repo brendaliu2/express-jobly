@@ -75,7 +75,7 @@ router.get('/', async function (req, res, next) {
 
 /**GET /[id] => { job }
  * 
- * Job is { id, title, salary, equity, companyHandle }
+ * Output: { id, title, salary, equity, companyHandle }
  * 
  * Authorization required: none
  */
@@ -89,7 +89,7 @@ router.get('/:id', async function (req, res, next) {
  * Patches job data
  * 
  * Input: id, {title, salary, equity} 
- *  Will throw BadRequest if submit id or companyHandle
+ *  Will throw BadRequest if submit id or companyHandle in req.body
  * 
  * Output: {job: {id, title, salary, equity, companyHandle}}
  * 

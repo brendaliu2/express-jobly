@@ -6,8 +6,9 @@ const { BCRYPT_WORK_FACTOR } = require("../config");
 async function commonBeforeAll() {
   // noinspection SqlWithoutWhere
   await db.query("DELETE FROM companies");
-  // noinspection SqlWithoutWhere QUESTION: what is this?
+  // noinspection SqlWithoutWhere 
   await db.query("DELETE FROM users");
+  // noinspection SqlWithoutWhere
   await db.query("DELETE FROM jobs");
   await db.query("ALTER SEQUENCE jobs_id_seq RESTART WITH 1");
 

@@ -256,9 +256,10 @@ describe("get", function () {
       description: "Desc1",
       numEmployees: 1,
       logoUrl: "http://c1.img",
+      jobs: [{id: 1, title: "job1", salary:10, equity: "0.001"}]
     });
   });
-
+  
   test("not found if no such company", async function () {
     try {
       await Company.get("nope");

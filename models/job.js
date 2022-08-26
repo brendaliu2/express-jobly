@@ -81,7 +81,7 @@ class Job {
 
   /**Find all jobs with optional filtering
    * 
-   * Input: {title:..., minSalary:..., hasEquity: ...}
+   * Input: {title:{string}, minSalary:{integer}, hasEquity: {boolean}}
    * 
    * Output: [{id, title, salary, equity, companyHandle}]
    */
@@ -117,7 +117,7 @@ class Job {
       FROM jobs
       WHERE id = $1`, [id]);
 
-    if (!results.rows[0]) throw new NotFoundError('Job not found!');
+    if (!results.rows[0]) throw new NotFoundError(`Job ${id} not found!`);
 
     return results.rows[0];
   }
@@ -126,6 +126,7 @@ class Job {
    * Input: companyHandle
    * 
    * Output: [{id, title, salary, equity}, ...]
+   * 
    */
   static async getAllJobsFromCompany(companyHandle){
     const results = await db.query(`
@@ -136,7 +137,6 @@ class Job {
       FROM jobs
       WHERE company_handle = $1`, [companyHandle]);
     
-    if(!results.rows[0]) results.rows.push('No available jobs.')
     return results.rows;
   }
 
@@ -152,7 +152,7 @@ class Job {
   */
   static async update(id, data) {
     if (data.companyHandle || data.id) 
-      throw new BadRequestError("Invalid data.");
+      throw new BadRequestError("Invalid data. Expecting job title, salary, equity.");
     
     const { setCols, values } = sqlForPartialUpdate(data, {});
 

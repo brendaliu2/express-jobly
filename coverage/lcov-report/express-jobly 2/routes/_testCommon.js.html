@@ -314,7 +314,7 @@ async function commonAfterAll() {
 }
 &nbsp;
 &nbsp;
-const u1Token = createToken({ username: "u1", isAdmin: false });
+const adminToken = createToken({ username: "u1", isAdmin: false });
 &nbsp;
 &nbsp;
 module.exports = {
@@ -322,7 +322,7 @@ module.exports = {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-  u1Token,
+  adminToken,
 };
 &nbsp;</pre></td></tr></table></pre>
 
