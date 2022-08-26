@@ -37,6 +37,10 @@ async function commonBeforeAll() {
     VALUES ('job1','10','.001','c1'),
             ('job2','15','.050','c2'),
             ('job3','20','1.0','c2')`);
+            
+  await db.query(`
+    INSERT INTO applications (username, job_id)
+      VALUES ('u1', 1), ('u1', 2)`)
 }
 
 async function commonBeforeEach() {

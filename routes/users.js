@@ -106,5 +106,20 @@ router.delete("/:username", ensureAdminOrCorrectUser, async function (req, res, 
   return res.json({ deleted: req.params.username });
 });
 
+/** POST /users/:username/jobs/:id 
+ * 
+ * Output: { applied: id }
+ * 
+ * If username invalid or id (for job) invalid, will throw NotFoundError
+   */
+
+router.post('/:username/jobs/:id', ensureAdminOrCorrectUser, async function(req,res,next){
+  let {username, id} = req.params;
+  
+  await User.applyToJob(username, id);
+  
+  return res.json({ applied: id })
+})
+
 
 module.exports = router;

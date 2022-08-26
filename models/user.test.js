@@ -140,6 +140,7 @@ describe("get", function () {
       lastName: "U1L",
       email: "u1@email.com",
       isAdmin: false,
+      jobs: [1, 2]
     });
   });
 
@@ -231,17 +232,39 @@ describe("remove", function () {
 
 /*************************************** applyToJob */
 
-// describe("applyToJob", function(){
-//   test("works", async function(){
-//     let job = await User.applyToJob("u1", 1);
-//     const res = await db.query(
-//       `SELECT * FROM applications WHERE username="j1" AND job_id=1`
-//     );
-//     expect(res.rows[0]).toEqual
+describe("applyToJob", function(){
+  test("works", async function(){
+    const job = await User.applyToJob("u2", 3);
     
-//   })
+    const res = await db.query(
+      `SELECT * FROM applications WHERE username='u1' AND job_id=1`
+    );
+    
+    expect(res.rows.length).toEqual(1);
+    expect(job).toEqual({
+      username: 'u2',
+      jobId: 3
+    })
+  })
   
-//   test("fails on non-existing user")
+  test("fails on non-existing user", async function () {
+    try{
+      await User.applyToJob('invalid', 1);
+      throw new Error("fail test, you shouldn't get here");
+      
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  })
   
-//   test("fails on non-existing job")
-// })
+  test("fails on non-existing job", async function () {
+    try{
+      await User.applyToJob('u1', 0);
+      throw new Error("fail test, you shouldn't get here");
+      
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  })
+  
+})

@@ -12,7 +12,8 @@ const {
   commonAfterEach,
   commonAfterAll,
   adminToken,
-  nonAdminToken
+  nonAdminToken,
+  jobs
 } = require("./_testCommon");
 
 beforeAll(commonBeforeAll);
@@ -199,10 +200,11 @@ describe("GET /users/:username", function () {
         lastName: "U2L",
         email: "user2@user.com",
         isAdmin: false,
+        jobs:[]
       },
     });
   });
-
+  
   test("works for logged-in non-admin user checking self profile", async function () {
     const resp = await request(app)
       .get(`/users/u2`)
@@ -214,6 +216,24 @@ describe("GET /users/:username", function () {
         lastName: "U2L",
         email: "user2@user.com",
         isAdmin: false,
+        jobs:[]
+      },
+    });
+  });
+  
+  test("works for logged-in admin user checking self profile", async function () {
+    const [j1, j2, j3] = jobs;
+    const resp = await request(app)
+      .get(`/users/u1`)
+      .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.body).toEqual({
+      user: {
+        username: "u1",
+        firstName: "U1F",
+        lastName: "U1L",
+        email: "user1@user.com",
+        isAdmin: true,
+        jobs:[j1.id, j2.id]
       },
     });
   });
@@ -343,11 +363,11 @@ describe("PATCH /users/:username", () => {
 
 describe("DELETE /users/:username", function () {
   test("works for authorized users deleting other user", async function () {
-    const resp = await request(app)
-      .delete(`/users/u2`)
-      .set("authorization", `Bearer ${adminToken}`);
-    expect(resp.body).toEqual({ deleted: "u2" });
-  });
+      const resp = await request(app)
+        .delete(`/users/u2`)
+        .set("authorization", `Bearer ${adminToken}`);
+      expect(resp.body).toEqual({ deleted: "u2" });
+    });
   
   test("works for unauthorized users deleting self", async function () {
     const resp = await request(app)
@@ -376,3 +396,62 @@ describe("DELETE /users/:username", function () {
     expect(resp.statusCode).toEqual(404);
   });
 });
+
+
+/************************************** POST /users/:username/jobs/:id  */
+
+describe('POST /users/:username/jobs/:id', function () {
+  
+  test('works with auth user adding job for another user', async function (){
+    const [j1,j2,j3] = jobs;
+    
+    const resp = await request(app)
+      .post(`/users/u2/jobs/${j1.id}`)
+      .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.body).toEqual({ applied: `${j1.id }`});
+  });
+  
+  test ('work with unauth current user adding for current user', async function (){
+    const [j1,j2,j3] = jobs;
+    
+    const resp = await request(app)
+      .post(`/users/u2/jobs/${j1.id}`)
+      .set("authorization", `Bearer ${nonAdminToken}`);
+    expect(resp.body).toEqual({ applied: `${j1.id }` });
+  });
+  
+  test('fails on unauth user adding for another user', async function () {
+    const [j1,j2,j3] = jobs;
+
+    const resp = await request(app)
+      .post(`/users/u1/jobs/${j1.id}`)
+      .set("authorization", `Bearer ${nonAdminToken}`);
+    expect(resp.statusCode).toEqual(401);
+  }); 
+  
+  test('fails on anon', async function () {
+    const [j1,j2,j3] = jobs;
+
+    const resp = await request(app)
+      .post(`/users/u1/jobs/${j1.id}`)
+    expect(resp.statusCode).toEqual(401);
+  });
+  
+  test('fails on invalid username', async function (){
+    const [j1,j2,j3] = jobs;
+
+    const resp = await request(app)
+      .post(`/users/invalid/jobs/${j1.id}`)
+      .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.statusCode).toEqual(404);
+  }); 
+  
+  test('fails on invalid job id', async function (){
+    const resp = await request(app)
+      .post(`/users/u1/jobs/0`)
+      .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.statusCode).toEqual(404);
+  }); 
+  
+})
+
