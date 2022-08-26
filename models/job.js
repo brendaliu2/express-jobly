@@ -121,6 +121,24 @@ class Job {
 
     return results.rows[0];
   }
+  
+  /**
+   * Input: companyHandle
+   * 
+   * Output: [{id, title, salary, equity}, ...]
+   */
+  static async getAllJobsFromCompany(companyHandle){
+    const results = await db.query(`
+    SELECT id,
+          title,
+          salary,
+          equity
+      FROM jobs
+      WHERE company_handle = $1`, [companyHandle]);
+    
+    if(!results.rows[0]) results.rows.push('No available jobs.')
+    return results.rows;
+  }
 
   /** Update job data with 'data'
    * 

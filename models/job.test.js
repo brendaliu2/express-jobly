@@ -142,7 +142,7 @@ describe('findAll', function () {
         title: 'job3',
         salary: 20,
         equity: "1.0",
-        companyHandle: 'c3'
+        companyHandle: 'c2'
       },
     ]);
   });
@@ -177,7 +177,7 @@ describe('findAll', function () {
         title: 'job3',
         salary: 20,
         equity: "1.0",
-        companyHandle: 'c3'
+        companyHandle: 'c2'
       },
     ]);
   });
@@ -198,7 +198,7 @@ describe('findAll', function () {
         title: 'job3',
         salary: 20,
         equity: "1.0",
-        companyHandle: 'c3'
+        companyHandle: 'c2'
       },
     ]);
   });
@@ -240,7 +240,7 @@ describe('findAll', function () {
         title: 'job3',
         salary: 20,
         equity: "1.0",
-        companyHandle: 'c3'
+        companyHandle: 'c2'
       },
     ]);
   });
@@ -272,6 +272,29 @@ describe("get", function () {
     }
   });
 });
+
+/************************************** getAllJobsFromCompany */
+
+describe('getAllJobsFromCompany', function () {
+  test('works', async function () {
+    let jobs = await Job.getAllJobsFromCompany('c1');
+    
+    expect(jobs).toEqual([{
+      id: expect.any(Number),
+      title: 'job1',
+      salary: 10,
+      equity: "0.001"
+    }])
+  })
+  
+  test('works with no available jobs', async function () {
+    let jobs = await Job.getAllJobsFromCompany('c3');
+    
+    expect(jobs).toEqual(['No available jobs.'])
+  })
+})
+
+
 
 /************************************** update */
 

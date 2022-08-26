@@ -12,7 +12,7 @@ const {
   commonAfterAll,
   u1Token,
   u2Token,
-  j1, j2, j3,
+  jobs
 } = require("./_testCommon");
 const { UnauthorizedError, NotFoundError } = require("../expressError");
 
@@ -30,8 +30,10 @@ describe("POST /jobs", function(){
     equity: 0.2,
     companyHandle: "c1"
   };
-  
+
   test("okay for authorized user", async function(){
+
+    
     const resp = await request(app)
       .post("/jobs")
       .send(newJob)
@@ -83,32 +85,39 @@ describe("POST /jobs", function(){
 /************************************** GET /jobs */
 
 describe("GET /jobs", function(){
+  
   test("ok for anon and no filtering", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app).get("/jobs");
     expect(resp.body).toEqual({ jobs: [ j1, j2, j3] });
   });
 
   test("works: title in query string", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app).get("/jobs?title=j1");
     expect(resp.body).toEqual({jobs: [j1]});
   });
   
   test("works: partial title in query string", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app).get("/jobs?title=j");
     expect(resp.body).toEqual({jobs: [j1, j2, j3]});
   });
   
   test("works: minSalary and hasEquity in query string", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app).get("/jobs?minSalary=5&hasEquity=true");
     expect(resp.body).toEqual({jobs: [j2,j3]});
   });
   
   test("works: all criteria in query string", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app).get("/jobs?title=j&minSalary=2&hasEquity=true");
     expect(resp.body).toEqual({jobs: [j2, j3]});
   });
   
   test("works: hasEquity is false", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app).get("/jobs?hasEquity=false");
     expect(resp.body).toEqual({jobs: [j1,j2,j3]});
   });
@@ -136,6 +145,7 @@ describe("GET /jobs", function(){
 
 describe("GET /jobs/:id", function(){
   test("works for anon", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app).get(`/jobs/${j1.id}`);
     expect(resp.body).toEqual({ job: j1 });
   });
@@ -150,6 +160,7 @@ describe("GET /jobs/:id", function(){
 
 describe("PATCH /jobs/:id", function(){
   test("works for authorized user", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app)
       .patch(`/jobs/${j1.id}`)
       .send({title: "j1-new"})
@@ -166,6 +177,7 @@ describe("PATCH /jobs/:id", function(){
   })
   
   test("fails for unauthorized user", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app)
         .patch(`/jobs/${j1.id}`)
         .send({
@@ -175,29 +187,30 @@ describe("PATCH /jobs/:id", function(){
     expect(resp.statusCode).toEqual(401);
   })
   
-  test("fails for anon"), async function(){
+  test("fails for anon", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app)
         .patch(`/jobs/${j1.id}`)
         .send({
           title: "j1-new",
         });
     expect(resp.statusCode).toEqual(401);
-  }
+  })
   
   test("fails for nonexisting job", async function(){
-    try{
-      await request(app)
+      const resp = await request(app)
         .patch("/jobs/0")
         .send({title: "j1-new"})
         .set("authorization", `Bearer ${u1Token}`);
-      throw new Error("you shouldn't be here!");
-    } catch(err){
-      expect(err.status).toEqual(404);
-      expect(err instanceof NotFoundError).toBeTruthy();
-    }
+      
+      console.log('resp',resp.body)
+      expect(resp.statusCode).toEqual(404);
+      expect(resp.body.error.message).toEqual('No job with id: 0')
   })
+
   
   test("bad request on company change attempt", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app)
       .patch(`/jobs/${j1.id}`)
       .send({companyHandle: "c2"})
@@ -206,6 +219,7 @@ describe("PATCH /jobs/:id", function(){
   })
   
   test("bad request on id change attempt", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app)
       .patch(`/jobs/${j1.id}`)
       .send({id: 40000})
@@ -214,6 +228,7 @@ describe("PATCH /jobs/:id", function(){
   });
   
   test("bad request on invalid data", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app)
       .patch(`/jobs/${j1.id}`)
       .send({salary: "not-a-number"})
@@ -227,19 +242,22 @@ describe("PATCH /jobs/:id", function(){
 
 describe("DELETE /jobs/:id", function(){
   test("works for authorized users", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app)
       .delete(`/jobs/${j1.id}`)
       .set("authorization", `Bearer ${u1Token}`);
-    expect(resp.body).toEqual({ deleted: "j1"});
+    expect(resp.body).toEqual({ deleted: `${j1.id}`});
   });
   
   test("fails for anon", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app)
       .delete(`/jobs/${j1.id}`);
     expect(resp.statusCode).toEqual(401);
   })
   
   test("fails for unauthorized user", async function(){
+    let [j1, j2, j3] = jobs;
     const resp = await request(app)
       .delete(`/jobs/${j1.id}`)
       .set("authorization", `Bearer ${u2Token}`);
