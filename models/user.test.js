@@ -231,17 +231,17 @@ describe("remove", function () {
 
 /*************************************** applyToJob */
 
-describe("applyToJob", function(){
-  test("works", async function(){
-    let job = await User.applyToJob("u1", 1);
-    const res = await db.query(
-      `SELECT * FROM applications WHERE username="j1" AND job_id=1`
-    );
-    expect(res.rows[0]).toEqual
+// describe("applyToJob", function(){
+//   test("works", async function(){
+//     let job = await User.applyToJob("u1", 1);
+//     const res = await db.query(
+//       `SELECT * FROM applications WHERE username="j1" AND job_id=1`
+//     );
+//     expect(res.rows[0]).toEqual
     
-  })
+//   })
   
-  test("fails on non-existing user")
+//   test("fails on non-existing user")
   
-  test("fails on non-existing job")
-})
+//   test("fails on non-existing job")
+// })
